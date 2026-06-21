@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+dist/
+
+# Environment
+.env
+.env.local
+
+# Generated documents
+storage/generated-documents/*
+!storage/generated-documents/.gitkeep
+
+# Logs
+*.log

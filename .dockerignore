@@ -1,0 +1,14 @@
+**/node_modules
+**/dist
+**/.next
+**/out
+**/.git
+**/*.log
+**/.env
+**/.env.local
+**/.env.*.local
+apps/backend/storage/generated-documents/*
+!apps/backend/storage/generated-documents/.gitkeep
+npm-debug.log*
+.DS_Store
+nginx/certs
