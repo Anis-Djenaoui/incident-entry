@@ -12,9 +12,11 @@ RUN npm ci
 
 # --- Build Next.js ---
 FROM base AS build
-# URL publique de l'API, injectée au build (variable NEXT_PUBLIC_*).
+# Variables NEXT_PUBLIC_* : injectées au build (intégrées au bundle client).
 ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_BASE_PATH
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_BASE_PATH=$NEXT_PUBLIC_BASE_PATH
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json package-lock.json ./

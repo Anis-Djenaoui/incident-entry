@@ -41,7 +41,7 @@ export default function LoginPage() {
   // Supprime les identifiants de l'URL s'ils y figurent (soumission GET native).
   useEffect(() => {
     if (typeof window !== 'undefined' && window.location.search) {
-      window.history.replaceState({}, '', '/login');
+      window.history.replaceState({}, '', window.location.pathname);
     }
   }, []);
 

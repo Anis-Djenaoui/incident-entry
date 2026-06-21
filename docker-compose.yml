@@ -57,6 +57,7 @@ services:
       dockerfile: apps/frontend/Dockerfile
       args:
         NEXT_PUBLIC_API_URL: ${PUBLIC_APP_URL:-http://localhost}
+        NEXT_PUBLIC_BASE_PATH: ${APP_BASE_PATH:-}
     restart: unless-stopped
     depends_on:
       backend:
@@ -85,7 +86,8 @@ services:
       frontend:
         condition: service_healthy
     ports:
-      - '${NGINX_HTTP_PORT:-80}:80'
+      # 0.0.0.0:80 — accessible depuis les autres machines du réseau (ex: Nginx archivage sur .208)
+      - '0.0.0.0:${NGINX_HTTP_PORT:-80}:80'
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     networks:

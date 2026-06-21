@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { withBasePath } from '@/lib/base-path';
 
 interface BrandLogoProps {
   className?: string;
@@ -9,7 +10,7 @@ interface BrandLogoProps {
 export function BrandLogo({ className, priority = false }: BrandLogoProps) {
   return (
     <Image
-      src="/buaa-logo.png"
+      src={withBasePath('/buaa-logo.png')}
       alt="BUAA"
       width={220}
       height={72}

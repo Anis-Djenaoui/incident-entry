@@ -1,0 +1,49 @@
+# Configuration Nginx EXTERNE — archivage.buaa.dz → incident_entry
+#
+# À placer dans le server {} HTTPS, AVANT le bloc `location /` (Alfresco).
+#
+# Prérequis réseau (cause n°1 des 502 depuis l'extérieur) :
+#   Le serveur qui héberge ce Nginx (souvent 192.168.1.208) doit pouvoir joindre
+#   la machine Docker de l'application (192.168.1.26:80).
+#
+# Tests depuis le serveur Nginx (192.168.1.208) :
+#   curl -I http://192.168.1.26/request-buat/
+#   → doit renvoyer HTTP/1.1 200 (sinon : firewall, Docker arrêté, SELinux)
+#
+# Firewall sur 192.168.1.26 (Fedora/RHEL) :
+#   sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="192.168.1.208" port port="80" protocol="tcp" accept'
+#   sudo firewall-cmd --reload
+#
+# SELinux sur le serveur Nginx (192.168.1.208) — si curl échoue avec "Permission denied" :
+#   sudo setsebool -P httpd_can_network_connect 1
+
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
+upstream incident_entry {
+    server 192.168.1.26:80;
+    keepalive 8;
+}
+
+# IMPORTANT : ce bloc doit être AVANT `location /` (Alfresco)
+location /request-buat {
+    proxy_pass http://incident_entry;
+
+    proxy_set_header Host              $host;
+    proxy_set_header X-Real-IP         $remote_addr;
+    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Host  $host;
+
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade    $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+
+    proxy_connect_timeout 60s;
+    proxy_send_timeout    120s;
+    proxy_read_timeout    120s;
+
+    proxy_buffering off;
+}
