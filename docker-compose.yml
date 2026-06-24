@@ -17,6 +17,19 @@ services:
     networks:
       - app_net
 
+  # Relais TCP vers Alfresco quand l'instance n'est pas joignable depuis le
+  # réseau bridge Docker (ex. VM libvirt sur virbr0). Démarrer avec :
+  #   docker compose --profile alfresco-proxy up -d
+  alfresco-proxy:
+    image: alpine/socat:1.8.0.0
+    network_mode: host
+    restart: unless-stopped
+    command:
+      - TCP-LISTEN:${ALFRESCO_PROXY_LISTEN_PORT:-8081},fork,reuseaddr
+      - TCP:${ALFRESCO_UPSTREAM_HOST:?ALFRESCO_UPSTREAM_HOST requis avec le profil alfresco-proxy}:${ALFRESCO_UPSTREAM_PORT:-8080}
+    profiles:
+      - alfresco-proxy
+
   backend:
     build:
       context: .
@@ -25,6 +38,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     environment:
       NODE_ENV: production
       PORT: 3001
