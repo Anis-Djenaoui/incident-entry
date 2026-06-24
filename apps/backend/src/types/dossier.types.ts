@@ -1,4 +1,5 @@
 import type { Compagnie } from '../constants/compagnie';
+import type { DossierStatut } from '../constants/dossier-statut';
 
 export type NatureIncident = 'corporel' | 'materiel';
 
@@ -19,6 +20,7 @@ export interface CreateDossierDto {
 
 export interface IncidentDossier extends CreateDossierDto {
   id: string;
+  statut: DossierStatut;
   generatedDocPath: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -38,6 +40,7 @@ export interface IncidentDossierRow {
   date_echeance: Date;
   nature_incident: string;
   provision: string;
+  statut: string;
   generated_doc_path: string | null;
   created_at: Date;
   updated_at: Date;

@@ -6,6 +6,7 @@ import pinoHttp from 'pino-http';
 import { config } from './config/env';
 import { logger } from './config/logger';
 import dossierRoutes from './routes/dossier.routes';
+import incidentRoutes from './routes/incident.routes';
 import { authRoutes, authMiddleware } from './routes/auth.routes';
 import { errorHandler, notFoundHandler } from './middlewares/error.middleware';
 
@@ -56,6 +57,7 @@ app.use('/api/auth', authRoutes);
 
 // Routes métier protégées : authentification requise.
 app.use('/api', authMiddleware, dossierRoutes);
+app.use('/api', authMiddleware, incidentRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

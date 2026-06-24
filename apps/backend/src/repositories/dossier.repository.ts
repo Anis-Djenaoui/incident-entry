@@ -1,4 +1,5 @@
 import { db } from '../config/database';
+import type { DossierStatutUpdatable } from '../constants/dossier-statut';
 import {
   CreateDossierDto,
   IncidentDossier,
@@ -19,6 +20,7 @@ const mapRowToDossier = (row: IncidentDossierRow): IncidentDossier => ({
   dateEcheance: formatDate(row.date_echeance),
   natureIncident: row.nature_incident as IncidentDossier['natureIncident'],
   provision: parseFloat(row.provision),
+  statut: row.statut as IncidentDossier['statut'],
   generatedDocPath: row.generated_doc_path,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
@@ -51,8 +53,26 @@ export class DossierRepository {
     return mapRowToDossier(row as IncidentDossierRow);
   }
 
+  async findAll(): Promise<IncidentDossier[]> {
+    const rows = await db('incident_dossiers').orderBy('created_at', 'desc');
+    return rows.map((row) => mapRowToDossier(row as IncidentDossierRow));
+  }
+
   async findById(id: string): Promise<IncidentDossier | null> {
     const row = await db('incident_dossiers').where({ id }).first();
+    if (!row) return null;
+    return mapRowToDossier(row as IncidentDossierRow);
+  }
+
+  async updateStatut(id: string, statut: DossierStatutUpdatable): Promise<IncidentDossier | null> {
+    const [row] = await db('incident_dossiers')
+      .where({ id })
+      .update({
+        statut,
+        updated_at: db.fn.now(),
+      })
+      .returning('*');
+
     if (!row) return null;
     return mapRowToDossier(row as IncidentDossierRow);
   }
